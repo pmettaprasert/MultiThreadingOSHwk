@@ -37,6 +37,9 @@ int fd[2];
 //create the mutex
 pthread_mutex_t mutexLock;
 
+//create a mutex for handling the requests
+pthread_mutex_t requestMutex;
+
 //Using this function to get the thread id for Mac users
 long get_tid_xplat() {
 #ifdef __APPLE__
@@ -86,6 +89,12 @@ int main() {
         return -1;
     }
 
+    //create a mutex for handling the requests
+    if (pthread_mutex_init(&requestMutex, nullptr) != 0) {
+        perror("Error creating mutex");
+        return -1;
+    }
+
     //create a socket
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (server_fd < 0) {
@@ -128,9 +137,11 @@ int main() {
         }
 
         //create a thread to handle the request
+        pthread_mutex_lock(&requestMutex);
         pthread_t thread;
         pthread_create(&thread, nullptr, handleRequest, (void *) &client_fd);
         pthread_detach(thread);
+        pthread_mutex_unlock(&requestMutex);
 
     }
     return 0;
