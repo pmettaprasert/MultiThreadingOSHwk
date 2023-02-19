@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/c/Users/colle/OneDrive/Desktop/Hwk for OS/hwk7withGit/hwk7attemptnum3/main.cpp
+iostream
+-
+sys/socket.h
+-
+netinet/in.h
+-
+cstring
+-
+vector
+-
+sstream
+-
+unistd.h
+-
+pthread.h
+-
+mutex
+-
+

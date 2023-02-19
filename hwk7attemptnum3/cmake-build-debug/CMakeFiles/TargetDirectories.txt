@@ -1,0 +1,3 @@
+/mnt/c/Users/colle/OneDrive/Desktop/Hwk for OS/hwk7withGit/hwk7attemptnum3/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/colle/OneDrive/Desktop/Hwk for OS/hwk7withGit/hwk7attemptnum3/cmake-build-debug/CMakeFiles/edit_cache.dir
+/mnt/c/Users/colle/OneDrive/Desktop/Hwk for OS/hwk7withGit/hwk7attemptnum3/cmake-build-debug/CMakeFiles/hwk7attemptnum3.dir
