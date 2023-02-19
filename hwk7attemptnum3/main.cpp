@@ -171,7 +171,9 @@ void *handleRequest(void *arg) {
 
         //if the file does not exist, send a 404
         string response = "HTTP/1.1 404 Not Found\r\n\r\n";
+        pthread_mutex_lock(&mutexLock);
         send(client_fd, response.c_str(), response.length(), 0);
+        pthread_mutex_unlock(&mutexLock);
 
         //send message to logger that includes the verb, uri, and 404 File not found
         string message = request.verb + " " + request.uri + " 404 File not found\n";
@@ -251,7 +253,9 @@ void *handleRequest(void *arg) {
 
 
         //send the response
+        pthread_mutex_lock(&mutexLock);
         send(client_fd, response.c_str(), response.length(), 0);
+        pthread_mutex_unlock(&mutexLock);
 
         //close the file
         fclose(file);
