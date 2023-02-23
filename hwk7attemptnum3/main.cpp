@@ -335,8 +335,13 @@ void printBuffer() {
         //add the read end of the pipe to the set
         FD_SET(fd[0], &set);
 
+        //set timeout to 1 second
+        struct timeval timeout;
+        timeout.tv_sec = 1;
+        timeout.tv_usec = 0;
+
         //wait for the read end of the pipe to become readable
-        ret = select(fd[0] + 1, &set, nullptr, nullptr, nullptr);
+        ret = select(fd[0] + 1, &set, nullptr, nullptr, &timeout);
 
         //check if the select was successful
         if (ret == -1) {
