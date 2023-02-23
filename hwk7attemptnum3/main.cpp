@@ -312,8 +312,8 @@ void *loggerRunner(void *arg) {
     //print the buffer
     printBuffer();
 
-    //return null
-    return nullptr;
+    //pthread_exit
+    pthread_exit(nullptr);
 
 
 }
