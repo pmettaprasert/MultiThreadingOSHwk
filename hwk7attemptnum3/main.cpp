@@ -369,6 +369,9 @@ void printBuffer() {
         //clear the buffer
         memset(buffer, 0, sizeof(buffer));
     }
+
+    //close the read end of the pipe
+    close(fd[0]);
 }
 
 
