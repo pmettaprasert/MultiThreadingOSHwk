@@ -172,22 +172,39 @@ void *handleRequest(void *arg) {
         //if the file does not exist, send a 404
         string response = "HTTP/1.1 404 Not Found\r\n";
 
-        //html message
-        string html = "<html><body><h1>404 Not Found</h1>"
-                      "<p>The file that you requested (" + request.uri +
-                         ") does not exist.</p>"
-                      "</body></html>";
+        //for quit uri send a different message saying the server is shutting
+        // down
+        if (request.uri == "/quit") {
+            string quitHTMLMessage = "<html><body><h1>Quit command has "
+                                     "been issued.</h1>"
+                                     "<p>The server is shutting down.</p>"
+                                     "</body></html>";
+            response += "Content-Type: text/html\r\n";
+            response += "Content-Length: " + to_string(quitHTMLMessage.length()) + "\r\n\r\n";
+            response += quitHTMLMessage;
+            pthread_mutex_lock(&mutexLock);
+            send(client_fd, response.c_str(), response.length(), 0);
+            pthread_mutex_unlock(&mutexLock);
 
-        //add the content type and content length to the response
-        response += "Content-Type: text/html\r\n";
-        response += "Content-Length: " + to_string(html.length()) + "\r\n\r\n";
+        } else {
+            //html message
+            string html = "<html><body><h1>404 Not Found</h1>"
+                          "<p>The file that you requested (" + request.uri +
+                          ") does not exist.</p>"
+                          "</body></html>";
 
-        //add the html to the response
-        response += html;
+            //add the content type and content length to the response
+            response += "Content-Type: text/html\r\n";
+            response +=
+                    "Content-Length: " + to_string(html.length()) + "\r\n\r\n";
 
-        pthread_mutex_lock(&mutexLock);
-        send(client_fd, response.c_str(), response.length(), 0);
-        pthread_mutex_unlock(&mutexLock);
+            //add the html to the response
+            response += html;
+
+            pthread_mutex_lock(&mutexLock);
+            send(client_fd, response.c_str(), response.length(), 0);
+            pthread_mutex_unlock(&mutexLock);
+        }
 
         //send message to logger that includes the verb, uri, and 404 File not found
         string message = request.verb + " " + request.uri + " 404 File not found\n";
