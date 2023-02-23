@@ -170,7 +170,21 @@ void *handleRequest(void *arg) {
     if (file == nullptr) {
 
         //if the file does not exist, send a 404
-        string response = "HTTP/1.1 404 Not Found\r\n\r\n";
+        string response = "HTTP/1.1 404 Not Found\r\n";
+
+        //html message
+        string html = "<html><body><h1>404 Not Found</h1>"
+                      "<p>The file that you requested (" + request.uri +
+                         ") does not exist.</p>"
+                      "</body></html>";
+
+        //add the content type and content length to the response
+        response += "Content-Type: text/html\r\n";
+        response += "Content-Length: " + to_string(html.length()) + "\r\n\r\n";
+
+        //add the html to the response
+        response += html;
+
         pthread_mutex_lock(&mutexLock);
         send(client_fd, response.c_str(), response.length(), 0);
         pthread_mutex_unlock(&mutexLock);
