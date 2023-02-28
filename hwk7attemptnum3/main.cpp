@@ -157,7 +157,15 @@ void *handleRequest(void *arg) {
     char buffer[10000];
 
     //read the request into the buffer
-    read(client_fd, buffer, 10000);
+    ssize_t bytes_read = read(client_fd, buffer, 10000);
+
+    //if the bytes read is 0, then it is an empty request. So quit the thread
+    if (bytes_read <= 0) {
+
+        //close the socket
+        close(client_fd);
+        pthread_exit(nullptr);
+    }
 
     //parse the request and store it in the request struct
     http_request_t request = parseRequest(buffer);
