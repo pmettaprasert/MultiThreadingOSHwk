@@ -72,7 +72,7 @@ int main() {
 
     //create a logger thread
     pthread_t loggerThread;
-    if(pthread_create(&loggerThread, nullptr, loggerRunner, nullptr) != 0) {
+    if (pthread_create(&loggerThread, nullptr, loggerRunner, nullptr) != 0) {
         perror("Error creating logger thread");
         return -1;
     }
@@ -188,10 +188,19 @@ void *handleRequest(void *arg) {
                                      "<p>The server is shutting down.</p>"
                                      "</body></html>";
             response += "Content-Type: text/html\r\n";
-            response += "Content-Length: " + to_string(quitHTMLMessage.length()) + "\r\n\r\n";
+            response +=
+                    "Content-Length: " + to_string(quitHTMLMessage.length()) +
+                    "\r\n\r\n";
             response += quitHTMLMessage;
             pthread_mutex_lock(&mutexLock);
-            send(client_fd, response.c_str(), response.length(), 0);
+
+            //resend the response if the first send fails
+            int numOfBytesSent = send(client_fd, response.c_str(),
+                                      response.length(), 0);
+            while (numOfBytesSent < 0 && errno == ENOTSOCK) {
+                numOfBytesSent = send(client_fd, response.c_str(),
+                                      response.length(), 0);
+            }
             pthread_mutex_unlock(&mutexLock);
 
         } else {
@@ -210,12 +219,20 @@ void *handleRequest(void *arg) {
             response += html;
 
             pthread_mutex_lock(&mutexLock);
-            send(client_fd, response.c_str(), response.length(), 0);
+
+            //resend the response if the first send fails
+            int numOfBytesSent = send(client_fd, response.c_str(),
+                                      response.length(), 0);
+            while (numOfBytesSent < 0 && errno == ENOTSOCK) {
+                numOfBytesSent = send(client_fd, response.c_str(),
+                                      response.length(), 0);
+            }
             pthread_mutex_unlock(&mutexLock);
         }
 
         //send message to logger that includes the verb, uri, and 404 File not found
-        string message = request.verb + " " + request.uri + " 404 File not found\n";
+        string message =
+                request.verb + " " + request.uri + " 404 File not found\n";
 
         //write to the pipe with mutex
         pthread_mutex_lock(&mutexLock);
@@ -275,9 +292,8 @@ void *handleRequest(void *arg) {
         //create a string to send to logger containing the verb, uri, 200 ok,
         // content type and content length
         string loggerString = request.verb + " " + request.uri + " 200 Ok " +
-                              "content-type: " + contentType + " "
-                                                               "content-length: " + to_string
-                                      (contentLength) + "\n";
+                              "content-type: " + contentType + " content-length: " +
+                              to_string(contentLength) + "\n";
 
         //write to the pipe with mutex
         pthread_mutex_lock(&mutexLock);
@@ -293,7 +309,15 @@ void *handleRequest(void *arg) {
 
         //send the response
         pthread_mutex_lock(&mutexLock);
-        send(client_fd, response.c_str(), response.length(), 0);
+
+        //resend the response if the first send fails
+        int numOfBytesSent = send(client_fd, response.c_str(), response
+        .length(), 0);
+
+        while (numOfBytesSent < 0 && errno == ENOTSOCK) {
+            numOfBytesSent = send(client_fd, response.c_str(), response
+            .length(), 0);
+        }
         pthread_mutex_unlock(&mutexLock);
 
         //close the file
@@ -337,7 +361,7 @@ void printBuffer() {
     //This is the return value of select
     int ret;
 
-    while(true) {
+    while (true) {
         //set the file descriptor.
         FD_ZERO(&set);
         //add the read end of the pipe to the set
@@ -374,7 +398,7 @@ void printBuffer() {
 
         //print the buffer
         pthread_mutex_lock(&mutexLock);
-        for(int i = 0; i < bytes_read; i++) {
+        for (int i = 0; i < bytes_read; i++) {
             printf("%c", buffer[i]);
         }
         pthread_mutex_unlock(&mutexLock);
@@ -386,7 +410,6 @@ void printBuffer() {
     //close the read end of the pipe
     close(fd[0]);
 }
-
 
 
 //Function to separate the request string return a struct http_request_t
