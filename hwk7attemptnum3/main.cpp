@@ -190,7 +190,7 @@ void *handleRequest(void *arg) {
             response += "Content-Type: text/html\r\n";
             response +="Content-Length: " + to_string(quitHTMLMessage.length()) +
                     "\r\n\r\n";
-            response += quitHTMLMessage;
+            response += quitHTMLMessage + "\n";
             pthread_mutex_lock(&mutexLock);
 
             //resend the response if the first send fails
@@ -215,7 +215,7 @@ void *handleRequest(void *arg) {
                     "Content-Length: " + to_string(html.length()) + "\r\n\r\n";
 
             //add the html to the response
-            response += html;
+            response += html + "\n";
 
             pthread_mutex_lock(&mutexLock);
 
