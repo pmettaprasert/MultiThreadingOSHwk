@@ -178,7 +178,7 @@ void *handleRequest(void *arg) {
     if (file == nullptr) {
 
         //if the file does not exist, send a 404
-        string response = "HTTP/1.1 404 Not Found\r\n";
+        string response = "HTTP/1.0 404 Not Found\r\n";
 
         //for quit uri send a different message saying the server is shutting
         // down
@@ -188,8 +188,7 @@ void *handleRequest(void *arg) {
                                      "<p>The server is shutting down.</p>"
                                      "</body></html>";
             response += "Content-Type: text/html\r\n";
-            response +=
-                    "Content-Length: " + to_string(quitHTMLMessage.length()) +
+            response +="Content-Length: " + to_string(quitHTMLMessage.length()) +
                     "\r\n\r\n";
             response += quitHTMLMessage;
             pthread_mutex_lock(&mutexLock);
@@ -260,7 +259,7 @@ void *handleRequest(void *arg) {
     } else {
 
         //if the file exists, send a 200
-        string response = "HTTP/1.1 200 OK\r\n";
+        string response = "HTTP/1.0 200 OK\r\n";
 
         //determine content type whether it is, html, js, css, png, plain text
         string contentType = "text/plain";
